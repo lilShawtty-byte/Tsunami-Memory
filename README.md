@@ -162,30 +162,28 @@ Memories don't exist in isolation — they form a graph. Every memory can be lin
 </div>
 
 ```bash
-# Install dependencies (zero runtime deps — SQLite ships with Bun)
 bun install
-
-# Start the TSUNAMI runtime
-bun run server/api.ts
 ```
 
-```
-🌊 TSUNAMI Memory API running on http://localhost:18904
+```typescript
+import {
+  tsunamiAdd, tsunamiSearch,
+  buildTsunamiStormCenter, formatTsunamiStormCenterText,
+} from 'tsunami-memory';
+
+// Store a memory
+const id = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
+
+// Full-text search — sub-millisecond FTS5
+const hits = await tsunamiSearch('refactor', 'project', undefined, 5);
+
+// Storm center — real-time context analysis
+const storm = buildTsunamiStormCenter({ query: 'continue work' });
+console.log(formatTsunamiStormCenterText(storm));
 ```
 
-```bash
-# Add a memory
-curl -X POST http://localhost:18904/add \
-  -H 'Content-Type: application/json' \
-  -d '{"wing":"project","room":"tasks","content":"Completed API refactor","energy":5}'
-# → {"ok":true,"result":"bunmem_lx..."}
-
-# Search with FTS5
-curl 'http://localhost:18904/search?q=API+refactor&limit=5'
-
-# Check storm center
-curl 'http://localhost:18904/storm?query=continue+work'
-```
+> Zero external dependencies. No server needed. SQLite ships with Bun.  
+> Want HTTP or MCP access? See [Interfaces](#-interfaces) below.
 
 > Zero external runtime dependencies. SQLite is built into Bun.
 
