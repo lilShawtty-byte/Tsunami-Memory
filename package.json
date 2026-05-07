@@ -1,0 +1,46 @@
+{
+  "name": "tsunami-memory",
+  "version": "1.0.0",
+  "description": "TSUNAMI — Bun-native oceanic memory system with basin/current flow, storm center, hot+cold retrieval, knowledge graph sync, and evidence linking.",
+  "main": "src/index.ts",
+  "files": [
+    "src/**/*.ts",
+    "server/**/*.ts",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsunami-memory/tsunami.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tsunami-memory/tsunami/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "bun run server/api.ts",
+    "typecheck": "tsc --noEmit",
+    "smoke": "bun run src/index.ts"
+  },
+  "keywords": [
+    "memory",
+    "agent",
+    "ai",
+    "tsunami",
+    "bun",
+    "sqlite",
+    "knowledge-graph",
+    "storm-center",
+    "retrieval"
+  ],
+  "author": "TSUNAMI Memory System",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "bun-types": "^1.0.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
