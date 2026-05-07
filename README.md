@@ -1,125 +1,207 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Active-2ea44f?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Bun-%3E%3D1.0.0-fbf0df?style=for-the-badge&logo=bun&logoColor=000" alt="Bun">
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Dependencies-zero-blue?style=for-the-badge" alt="Dependencies">
+  <img src="./assets/tsunami-banner.png" width="100%" alt="TSUNAMI Banner"/>
+</p>
+
+<h1 align="center">🌊 TSUNAMI</h1>
+
+<p align="center">
+  <strong>Oceanic Memory Runtime for AI Agents</strong>
 </p>
 
 <p align="center">
-  <a href="README.zh-CN.md">中文</a>
+  Bun-native • Storm-centered context engine • Hot + cold retrieval • Knowledge graph sync
 </p>
 
 <p align="center">
-  <pre align="center">
-    ████████╗███████╗██╗   ██╗███╗   ██╗ █████╗ ███╗   ███╗██╗
-    ╚══██╔══╝██╔════╝██║   ██║████╗  ██║██╔══██╗████╗ ████║██║
-       ██║   ███████╗██║   ██║██╔██╗ ██║███████║██╔████╔██║██║
-       ██║   ╚════██║██║   ██║██║╚██╗██║██╔══██║██║╚██╔╝██║██║
-       ██║   ███████║╚██████╔╝██║ ╚████║██║  ██║██║ ╚═╝ ██║██║
-       ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝
-  </pre>
+  <img src="https://img.shields.io/badge/Bun-1.0%2B-fbf0df?style=for-the-badge&logo=bun&logoColor=000" alt="Bun"/>
+  <img src="https://img.shields.io/badge/SQLite-FTS5-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite"/>
+  <img src="https://img.shields.io/badge/MCP-Compatible-7C3AED?style=for-the-badge" alt="MCP"/>
+  <img src="https://img.shields.io/badge/Zero%20Deps-blue?style=for-the-badge" alt="Zero Deps"/>
+  <img src="https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge" alt="MIT"/>
 </p>
 
-<p align="center"><strong>Oceanic Memory System for AI Agents</strong></p>
-
-<p align="center">Bun-native runtime — SQLite FTS5 full-text search · Knowledge graph · Storm center analysis · MCP / HTTP / SDK</p>
-
----
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Usage Guide](#usage-guide)
-  - [Interface A: MCP Tools](#interface-a-mcp-tools-claude-code--cursor--windsurf)
-  - [Interface B: HTTP API](#interface-b-http-api-any-language)
-  - [Interface C: TypeScript SDK](#interface-c-typescript-sdk-programmatic)
-- [Automatic Memory](#automatic-memory)
-- [Core Concepts](#core-concepts)
-- [Configuration](#configuration)
-- [License](#license)
+<p align="center">
+  <a href="README.zh-CN.md">中文文档</a>
+</p>
 
 ---
 
-## Architecture
+<div align="center">
 
+## Why TSUNAMI?
+
+</div>
+
+Most AI memory systems are **flat**, **stateless**, and **context-fragile**.
+
+TSUNAMI treats memory as **flowing currents** — not static text, but **momentum**. Each memory carries energy, creates pressure, links to evidence, and feeds into a live storm center that models the agent's cognitive state in real time.
+
+> Instead of storing text, TSUNAMI models **momentum**.
+
+---
+
+<div align="center">
+
+## 🌊 Architecture
+
+</div>
+
+```mermaid
+graph TD
+    TSUNAMI["🌊 TSUNAMI Runtime"]
+
+    TSUNAMI --> Basin["Basin<br/>Topic Areas"]
+    TSUNAMI --> Storm["🌀 Storm Center<br/>Context Engine"]
+    TSUNAMI --> Hot["⚡ Hot Retrieval<br/>SQLite FTS5"]
+    TSUNAMI --> Cold["❄️ Cold Retrieval<br/>Semantic Graph"]
+    TSUNAMI --> Graph["🧠 Knowledge Graph<br/>Triple Store"]
+
+    Basin --> Project["project"]
+    Basin --> Feedback["feedback"]
+    Basin --> Reference["reference"]
+    Basin --> User["user"]
+
+    Storm --> Signals["Signal Energy"]
+    Storm --> Pressure["Pressure Score"]
+    Storm --> Gate["Execution Gate"]
+    Storm --> Budget["Budget Control"]
+
+    Hot --> FTS5["Sub-ms Full-text"]
+    Cold --> Traversal["Graph Traversal"]
+
+    Graph --> Sync["Cross-session Sync"]
+    Graph --> Conflict["Conflict Detection"]
+    Graph --> Evidence["Evidence Linking"]
+
+    style TSUNAMI fill:#0d3b66,stroke:#1a73e8,color:#e8f4f8
+    style Storm fill:#1a237e,stroke:#5c6bc0,color:#e8eaf6
+    style Basin fill:#0d3b66,stroke:#1a73e8,color:#e8f4f8
+    style Hot fill:#01579b,stroke:#0288d1,color:#e1f5fe
+    style Cold fill:#01579b,stroke:#0288d1,color:#e1f5fe
+    style Graph fill:#004d40,stroke:#00897b,color:#e0f2f1
 ```
-TSUNAMI Memory Model
-├── Basin — Topic areas grouping related memories
-│   ├── project   — ongoing work context
-│   ├── feedback  — corrections & preferences
-│   ├── reference — external system knowledge
-│   └── user      — user profile & identity
-│
-├── Current — Active flow within a basin
-│   └── Tracks which topic is the current focus
-│
-├── Storm Center — Focused view of active signals
-│   ├── Active signals with energy levels
-│   ├── Recent evidence with confidence scores
-│   ├── Storm mode detection (dominant kind + pressure)
-│   └── Execution gate (budget control per task)
-│
-├── Hot + Cold Retrieval
-│   ├── Hot: SQLite FTS5 full-text search (sub-millisecond)
-│   └── Cold: knowledge graph traversal (semantic)
-│
-└── Runtime Graph Sync
-    ├── Auto-syncs memories across sessions
-    └── Conflict detection + evidence linking
-```
 
 ---
 
-## Installation
+<div align="center">
+
+## 🧩 Core Systems
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 🌀 Storm Center
+
+**Active signal convergence engine.**
+
+The Storm Center continuously evaluates the agent's context — measuring signal energy, calculating pressure scores, detecting storm modes, and issuing execution gates. It's a real-time cognitive dashboard that tells the agent *what matters right now*.
+
+- Pressure analysis with multi-factor scoring
+- Execution gating: `proceed` / `guarded` / `hold`
+- Confidence and readiness assessment
+- Budget allocation per task
+
+</td>
+<td width="50%">
+
+### 🌊 Basin & Current Flow
+
+**Topic-oriented memory streams.**
+
+Memories flow through basins (topic areas) as currents shift. Each basin tracks an active focus, and the system automatically classifies new memories into the correct basin/current pair. Context isn't stored — it *flows*.
+
+- 6 basins: epicenter, surface, faultline, abyss, surge, harbor
+- 24 named currents with taxonomy mapping
+- Automatic text classification
+- Legacy wing/room compatibility
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### ⚡ Hot + Cold Retrieval
+
+**Dual-path recall engine.**
+
+Hot retrieval hits SQLite FTS5 for sub-millisecond full-text search. Cold retrieval traverses the knowledge graph for semantic, relational discovery. Both paths are always available and context-weighted.
+
+- FTS5 full-text search (sub-millisecond)
+- Knowledge graph BFS traversal
+- Tunnel discovery between wings
+- Temporal validity tracking on all triples
+
+</td>
+<td width="50%">
+
+### 🧠 Runtime Graph Sync
+
+**Persistent distributed cognition.**
+
+Memories don't exist in isolation — they form a graph. Every memory can be linked to evidence, connected across sessions, and checked for conflicts. The graph syncs automatically with each write.
+
+- Cross-session memory continuity
+- Conflict detection with confidence adjustment
+- Evidence linking to files, conversations, and configs
+- Triple-store with confidence, validity, and provenance
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+## ⚡ Quick Start
+
+</div>
 
 ```bash
+# Install dependencies (zero runtime deps — SQLite ships with Bun)
 bun install
-```
 
-> **Requirements:** Bun >= 1.0.0. SQLite is built into Bun — **zero external runtime dependencies**.
-
----
-
-## Quick Start
-
-### 1. Start the server
-
-```bash
+# Start the TSUNAMI runtime
 bun run server/api.ts
-# → 🌊 TSUNAMI Memory API running on http://localhost:18904
 ```
 
-### 2. Add a memory
+```
+🌊 TSUNAMI Memory API running on http://localhost:18904
+```
 
 ```bash
+# Add a memory
 curl -X POST http://localhost:18904/add \
   -H 'Content-Type: application/json' \
   -d '{"wing":"project","room":"tasks","content":"Completed API refactor","energy":5}'
-# → {"ok":true,"result":"bunmem_abc123..."}
-```
+# → {"ok":true,"result":"bunmem_lx..."}
 
-### 3. Search with FTS5
-
-```bash
+# Search with FTS5
 curl 'http://localhost:18904/search?q=API+refactor&limit=5'
-```
 
-### 4. Check storm center
-
-```bash
+# Check storm center
 curl 'http://localhost:18904/storm?query=continue+work'
-# → {"ok":true,"storm":{"flow":{"basin":"surface",...},"stormMode":{...}}}
 ```
+
+> Zero external runtime dependencies. SQLite is built into Bun.
 
 ---
 
-## Usage Guide
+<div align="center">
 
-TSUNAMI exposes three interfaces. Pick the one that fits your stack.
+## 🔌 Interfaces
 
-### Interface A: MCP Tools (Claude Code / Cursor / Windsurf)
+</div>
+
+TSUNAMI exposes three interfaces. Choose the one that fits your stack.
+
+---
+
+### 🤖 MCP Tools — Claude Code, Cursor, Windsurf
 
 Configure once in `~/.claude/mcp.json`:
 
@@ -135,48 +217,114 @@ Configure once in `~/.claude/mcp.json`:
 }
 ```
 
-Eight tools available in any MCP-compatible client:
+The MCP server starts automatically. Eight tools available:
 
-| Tool | When to use | Example |
-|------|-------------|---------|
-| `tsunami_add` | Store a fact, decision, or observation | `{content:"Decided to use Redis", wing:"decision", energy:4}` |
-| `tsunami_search` | Find memories by keyword | `{query:"Redis cache", limit:5}` |
-| `tsunami_recall` | Pull recent memories from a topic | `{wing:"project", limit:10}` |
-| `tsunami_storm` | Get current context before starting work | `{query:"continue the API work"}` |
-| `tsunami_status` | Check memory store health | `{}` |
-| `tsunami_timeline` | Chronological memory feed | `{limit:20}` |
-| `tsunami_diary` | Log a session or daily entry | `{entry:"Today I built...", agent:"claude"}` |
-| `tsunami_wings` | List all topic areas and counts | `{}` |
+<details open>
+<summary><strong>🌀 tsunami_storm</strong> — Build storm center context</summary>
 
-> **Note:** The MCP server starts automatically when Claude Code launches. No separate process management needed.
+```json
+{ "query": "continue the API work" }
+```
 
-### Interface B: HTTP API (any language)
+Returns flow direction, storm mode, pressure level, execution gate, budget, and prioritized action directive.
+
+</details>
+
+<details>
+<summary><strong>🌊 tsunami_add</strong> — Store a memory</summary>
+
+```json
+{ "content": "Decided to use Redis for caching", "wing": "decision", "energy": 4 }
+```
+
+Returns a unique `bunmem_xxx` ID. Supports Chinese, emoji, any Unicode.
+
+</details>
+
+<details>
+<summary><strong>🔍 tsunami_search</strong> — FTS5 full-text search</summary>
+
+```json
+{ "query": "Redis cache", "wing": "project", "limit": 5 }
+```
+
+Sub-millisecond SQLite FTS5 search with optional wing/room filtering.
+
+</details>
+
+<details>
+<summary><strong>📋 tsunami_recall</strong> — Context-aware recall</summary>
+
+```json
+{ "wing": "project", "limit": 10 }
+```
+
+Pulls recent memories by topic, ordered by importance and recency.
+
+</details>
+
+<details>
+<summary><strong>📜 tsunami_timeline</strong> — Chronological feed</summary>
+
+```json
+{ "limit": 20 }
+```
+
+All memories in time order.
+
+</details>
+
+<details>
+<summary><strong>📓 tsunami_diary</strong> — Session log</summary>
+
+```json
+{ "entry": "Today I built the auth module", "agent": "claude" }
+```
+
+Auto-timestamped diary entries.
+
+</details>
+
+<details>
+<summary><strong>📊 tsunami_status</strong> — System health</summary>
+
+```json
+{}
+```
+
+Memory counts, wing stats, backend info.
+
+</details>
+
+<details>
+<summary><strong>🗂️ tsunami_wings</strong> — Topic taxonomy</summary>
+
+```json
+{}
+```
+
+All basins/wings with entry counts.
+
+</details>
+
+---
+
+### 🌐 HTTP API — Any language
 
 ```bash
 TSUNAMI_PORT=18904 TSUNAMI_HOME=~/.tsunami bun run server/api.ts
 ```
 
-All endpoints return JSON. Missing required fields return HTTP 400.
-
-| Method | Path | Body / Query |
-|--------|------|-------------|
-| `POST` | `/add` | `{wing, room, content, energy}` |
-| `GET` | `/search` | `?q=&wing=&limit=` |
-| `GET` | `/recall` | `?wing=&room=&limit=` |
-| `GET` | `/storm` | `?project=&query=` |
-| `GET` | `/status` | — |
-| `GET` | `/timeline` | `?limit=` |
-| `POST` | `/diary` | `{entry, agent, wing}` |
-| `GET` | `/health` | — |
-
-**Add parameters:**
-
-| Param | Type | Default | Description |
-|-------|------|---------|-------------|
-| `wing` | string | `"general"` | Topic basin |
-| `room` | string | `"inbox"` | Sub-topic within the wing |
-| `content` | string | **(required)** | Memory text. Supports Chinese, emoji, any Unicode |
-| `energy` | number `1–5` | `3` | Importance. 5 = critical, 1 = footnote |
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| `POST` | `/add` | 🌊 Store memory |
+| `GET` | `/search` | 🔍 FTS5 full-text search |
+| `GET` | `/recall` | 📋 Context recall |
+| `GET` | `/storm` | 🌀 Build storm center |
+| `GET` | `/status` | 📊 System health |
+| `GET` | `/timeline` | 📜 Time-ordered feed |
+| `POST` | `/diary` | 📓 Session log |
+| `GET` | `/health` | ✅ Liveness check |
 
 <table>
 <tr><td width="33%">
@@ -189,7 +337,6 @@ curl -X POST localhost:18904/add \
   -d '{"wing":"project",
        "content":"Refactored auth",
        "energy":4}'
-curl 'localhost:18904/search?q=auth&limit=5'
 ```
 
 </td><td width="33%">
@@ -203,10 +350,6 @@ r = requests.post(
   json={'wing': 'feedback',
         'content': 'User prefers dark mode',
         'energy': 5}
-)
-r = requests.get(
-  'http://localhost:18904/search',
-  params={'q': 'dark mode', 'limit': 3}
 )
 ```
 
@@ -224,52 +367,49 @@ const r = await fetch(
     content: 'Bun sqlite API docs',
     energy: 3})
 });
-const { result } = await r.json();
 ```
 
 </td></tr>
 </table>
 
-### Interface C: TypeScript SDK (programmatic)
+---
+
+### 📦 TypeScript SDK — Programmatic
 
 ```typescript
 import {
   tsunamiAdd, tsunamiSearch, tsunamiRecall,
-  tsunamiWakeUp, tsunamiDiary, tsunamiStatus,
-  tsunamiTimeline, tsunamiListWings,
-  tsunamiKgAdd, tsunamiKgQuery, tsunamiKgStats, tsunamiKgTimeline,
+  tsunamiKgAdd, tsunamiKgQuery,
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
   buildTsunamiExecutionGate, applyTsunamiExecutionGateToTool,
   classifyMemory,
 } from 'tsunami-memory';
 
-// Add
-const id = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
+const id   = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
+const hits = await tsunamiSearch('refactor', 'project', undefined, 10);
 
-// Search
-const results = await tsunamiSearch('API refactor', 'project', undefined, 10);
-
-// Storm center
 const storm = buildTsunamiStormCenter({
   projectDir: './my-project',
-  query: 'continue the API work',
+  query: 'continue work',
 });
 console.log(formatTsunamiStormCenterText(storm));
 ```
 
 ---
 
-## Automatic Memory
+<div align="center">
 
-By default, TSUNAMI operations are **explicit** — you call them when you want to store or recall. For hands-free memory, wire TSUNAMI into Claude Code hooks. The HTTP API must be running as a background daemon:
+## 🤖 Automatic Memory
 
-```bash
-bun run server/api.ts &   # or use PM2 / launchd
-```
+</div>
 
-### Three Hook Scenarios
+TSUNAMI operations are explicit by default — you decide when to store or recall. For hands-free memory, wire it into Claude Code hooks.
 
-**Session-Start** — inject storm center context so Claude wakes up with full situational awareness:
+**Prerequisite:** HTTP API running as a daemon (`bun run server/api.ts &` or PM2/launchd).
+
+### Session-Start · Context Injection
+
+Claude wakes up with full storm center context:
 
 ```json
 {
@@ -285,7 +425,9 @@ bun run server/api.ts &   # or use PM2 / launchd
 }
 ```
 
-**Session-End** — auto-diary each session:
+### Session-End · Auto-Diary
+
+Each session is logged automatically:
 
 ```json
 {
@@ -301,7 +443,9 @@ bun run server/api.ts &   # or use PM2 / launchd
 }
 ```
 
-**Every Turn** — auto-archive decision keywords:
+### Every Turn · Decision Capture
+
+Keywords like `decide`, `merge`, `deploy`, `发布`, `上线` auto-archive to the decision basin:
 
 ```json
 {
@@ -310,40 +454,36 @@ bun run server/api.ts &   # or use PM2 / launchd
       "matcher": "",
       "hooks": [{
         "type": "command",
-        "command": "PROMPT=$(cat); if echo \"$PROMPT\" | grep -qiE 'decid|chose|finaliz|merge|deploy|releas|shipp'; then curl -s -X POST http://localhost:18904/add -H 'Content-Type: application/json' -d \"{\\\"wing\\\":\\\"decision\\\",\\\"content\\\":\\\"$(echo $PROMPT | tr '\\\"' ' ' | head -c 500)\\\",\\\"energy\\\":4}\" > /dev/null 2>&1; fi"
+        "command": "PROMPT=$(cat); if echo \"$PROMPT\" | grep -qiE 'decid|chose|finaliz|merge|deploy|releas|shipp|决定|选择|合并|部署|发布|上线'; then curl -s -X POST http://localhost:18904/add -H 'Content-Type: application/json' -d \"{\\\"wing\\\":\\\"decision\\\",\\\"content\\\":\\\"$(echo $PROMPT | tr '\\\"' ' ' | head -c 500)\\\",\\\"energy\\\":4}\" > /dev/null 2>&1; fi"
       }]
     }]
   }
 }
 ```
 
-> See the [Complete Auto-Memory Config](#automatic-memory) section in the full README source for a ready-to-paste `settings.json` combining all three hooks.
-
 ---
 
-## Core Concepts
+<div align="center">
 
-| Concept | Description |
-|---------|-------------|
-| **Basin & Current** | Memories are organized into basins (topic areas). Each basin has a current (active flow) tracking what you're working on. |
-| **Storm Center** | Real-time analysis of active signals — flow direction, storm mode, pressure level, execution gate, budget allocation. |
-| **Execution Gate** | Controls agent step budget: `proceed` (full), `guarded` (reduced), `hold` (blocked) — based on memory confidence. |
-| **Evidence Linking** | Every memory links to its source — `conversation`, `file:<path>`, `config:<path>`. |
-| **Conflict Detection** | Contradictory memories are flagged, confidence is lowered, and repair suggestions are surfaced. |
+## ⚙️ Configuration
 
----
-
-## Configuration
+</div>
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `TSUNAMI_HOME` | `.tsunami` | Storage directory |
 | `TSUNAMI_PORT` | `18904` | HTTP API port |
-| `TSUNAMI_STORM_THRESHOLD` | `0.7` | Minimum energy for storm signal |
-| `TSUNAMI_BUDGET_STEPS` | `99` | Default execution budget |
+| `TSUNAMI_STORM_THRESHOLD` | `0.7` | Min energy for storm signal |
+| `TSUNAMI_BUDGET_STEPS` | `99` | Default execution step budget |
 
 ---
 
-## License
+<div align="center">
 
+## 📄 License
+
+</div>
+
+<p align="center">
 MIT © TSUNAMI Memory System
+</p>
