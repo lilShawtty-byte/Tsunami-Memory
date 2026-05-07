@@ -169,7 +169,7 @@ bun install
 import {
   tsunamiAdd, tsunamiSearch,
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
-} from 'tsunami-memory';
+} from './src/index.ts';
 
 // Store a memory
 const id = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
@@ -208,12 +208,14 @@ Configure once in `~/.claude/mcp.json`:
   "mcpServers": {
     "tsunami": {
       "command": "bun",
-      "args": ["run", "/path/to/TSUNAMI/server/mcp.ts"],
+      "args": ["run", "/absolute/path/to/TSUNAMI/server/mcp.ts"],
       "env": { "TSUNAMI_HOME": "~/.tsunami" }
     }
   }
 }
 ```
+
+> Replace `/absolute/path/to/TSUNAMI` with `pwd` if running from the repo, or the actual install path.
 
 The MCP server starts automatically. Eight tools available:
 
@@ -381,7 +383,7 @@ import {
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
   buildTsunamiExecutionGate, applyTsunamiExecutionGateToTool,
   classifyMemory,
-} from 'tsunami-memory';
+} from './src/index.ts';
 
 const id   = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
 const hits = await tsunamiSearch('refactor', 'project', undefined, 10);
