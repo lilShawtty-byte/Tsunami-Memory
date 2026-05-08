@@ -157,7 +157,16 @@ const v1_initial_schema: Migration = {
   },
 };
 
+/** v2 — Add embedding column for vector search. */
+const v2_add_embedding_column: Migration = {
+  version: 2,
+  name: 'add_embedding_column',
+  up(db) {
+    db.run(`ALTER TABLE memory_entries ADD COLUMN embedding BLOB`);
+  },
+};
+
 /** All migrations in version order. Add new entries at the end. */
 export function getMigrations(): Migration[] {
-  return [v1_initial_schema];
+  return [v1_initial_schema, v2_add_embedding_column];
 }

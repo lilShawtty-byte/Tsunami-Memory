@@ -3,6 +3,7 @@ import { dirname } from 'path';
 
 import {
   BUN_MEMORY_DB_PATH,
+  addWithEmbedding,
   buildBunMemoryPreview,
   checkBunMemoryDuplicate,
   countBunMemoryEntries,
@@ -15,6 +16,7 @@ import {
   listBunMemoryWingCounts,
   recallBunMemoryRows,
   searchBunMemoryRows,
+  searchByVector,
   wakeBunMemoryRows,
 } from './bun_memory_store';
 import {
@@ -699,6 +701,29 @@ export function tryHandleTsunamiBunRequest(req: Record<string, unknown>): any | 
       })),
       __backend: 'bun_native',
     };
+  }
+
+  if (cmd === 'add_embedding') {
+    const embedding = Array.isArray(req.embedding) ? (req.embedding as number[]) : [];
+    if (embedding.length === 0) {
+      return { ok: false, error: 'embedding vector required (number[])', __backend: 'bun_native' };
+    }
+    const id = addWithEmbedding(
+      wing || 'general', room || 'inbox',
+      String(req.content ?? '').trim(),
+      Number(req.importance ?? 3),
+      embedding,
+    );
+    return { ok: true, id, __backend: 'bun_native' };
+  }
+
+  if (cmd === 'search_vector') {
+    const vector = Array.isArray(req.embedding) ? (req.embedding as number[]) : [];
+    if (vector.length === 0) {
+      return { ok: false, error: 'embedding vector required for search_vector', __backend: 'bun_native' };
+    }
+    const results = searchByVector(vector, Number(req.limit ?? 5), wing || undefined);
+    return { ok: true, results, __backend: 'bun_native' };
   }
 
   return null;

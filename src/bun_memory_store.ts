@@ -301,6 +301,102 @@ export function deleteBunMemoryEntry(id: string): boolean {
   return result.changes > 0;
 }
 
+// ── Vector / Semantic Search ─────────────────────────────────
+
+/** Store a memory with an embedding vector for semantic search. */
+export function addWithEmbedding(
+  wing: string,
+  room: string,
+  content: string,
+  importance: number,
+  embedding: number[],
+): string {
+  const id = generateId();
+  const now = Date.now();
+  const blob = Buffer.from(new Float32Array(embedding).buffer);
+
+  getDb().prepare(`
+    INSERT INTO memory_entries (id, wing, room, content, importance, source, embedding, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    wing || 'general',
+    room || 'inbox',
+    content,
+    Math.min(5, Math.max(1, importance ?? 3)),
+    'embedding',
+    blob as any, // Buffer is valid SQLite BLOB but bun:sqlite types don't recognize it
+    now,
+    now,
+  );
+  return id;
+}
+
+function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length || a.length === 0) return 0;
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 0 : dot / denom;
+}
+
+function blobToArray(blob: unknown): number[] | null {
+  if (!blob) return null;
+  try {
+    // bun:sqlite returns BLOBs as Uint8Array; Node better-sqlite3 returns Buffer
+    if (blob instanceof Uint8Array) {
+      return Array.from(new Float32Array(blob.buffer.slice(blob.byteOffset, blob.byteOffset + blob.byteLength)));
+    }
+    if (Buffer.isBuffer(blob)) {
+      return Array.from(new Float32Array(blob.buffer.slice(blob.byteOffset, blob.byteOffset + blob.byteLength)));
+    }
+    if (blob instanceof ArrayBuffer) {
+      return Array.from(new Float32Array(blob));
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Search memories by vector similarity. Returns top-K with similarity scores. */
+export function searchByVector(
+  embedding: number[],
+  topK = 5,
+  wing?: string,
+): Array<{ id: string; wing: string; room: string; content: string; similarity: number }> {
+  const db = getDb();
+  let sql = 'SELECT id, wing, room, content, embedding FROM memory_entries WHERE embedding IS NOT NULL';
+  const params: any[] = [];
+  if (wing) { sql += ' AND wing = ?'; params.push(wing); }
+  sql += ' ORDER BY created_at DESC LIMIT 500';
+
+  const rows = db.prepare(sql).all(...params) as Array<{
+    id: string; wing: string; room: string; content: string; embedding: unknown;
+  }>;
+
+  const scored = rows
+    .map(row => {
+      const vec = blobToArray(row.embedding);
+      if (!vec) return null;
+      return {
+        id: row.id,
+        wing: row.wing,
+        room: row.room,
+        content: row.content,
+        similarity: Number(cosineSimilarity(embedding, vec).toFixed(4)),
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null && r.similarity > 0.3)
+    .sort((a, b) => b.similarity - a.similarity);
+
+  return scored.slice(0, Math.max(1, topK));
+}
+
 export function buildBunMemoryPreview(row: BunMemoryRow, maxLen: number): string {
   const text = String(row.content ?? '').replace(/\s+/g, ' ').trim();
   if (!text) return '';

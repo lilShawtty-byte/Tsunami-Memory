@@ -44,6 +44,8 @@ export const TSUNAMI_BUN_NATIVE_CMDS = [
   'traverse_graph',
   'find_tunnels',
   'graph_stats',
+  'add_embedding',
+  'search_vector',
 ] as const;
 
 export const TSUNAMI_WRAPPER_BRIDGE_CMDS = [] as const;

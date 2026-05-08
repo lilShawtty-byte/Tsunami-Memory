@@ -89,6 +89,18 @@ const server = Bun.serve({
         return json({ ok: true, timeline: result }, cors);
       }
 
+      // ── POST /search/semantic ────────────────────────
+      if (url.pathname === '/search/semantic' && req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        const { embedding, wing, limit } = body;
+        if (!Array.isArray(embedding) || embedding.length === 0) {
+          return json({ error: 'embedding vector required (number[])' }, cors, 400);
+        }
+        const store = await import('../src/bun_memory_store');
+        const results = store.searchByVector(embedding, limit || 5, wing);
+        return json({ ok: true, results }, cors);
+      }
+
       // ── POST /diary ─────────────────────────────────
       if (url.pathname === '/diary' && req.method === 'POST') {
         const body = await req.json().catch(() => ({}));
@@ -103,7 +115,7 @@ const server = Bun.serve({
         return json({
           service: 'TSUNAMI Memory API',
           version: '1.0.0',
-          endpoints: ['/health', '/add', '/search', '/recall', '/storm', '/status', '/timeline', '/diary'],
+          endpoints: ['/health', '/add', '/search', '/search/semantic', '/recall', '/storm', '/status', '/timeline', '/diary'],
         }, cors);
       }
 
