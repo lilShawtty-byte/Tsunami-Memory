@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { buildTsunamiStormCenter, type TsunamiStormCenter } from './tsunami_storm_center';
 
 function isHarnessLikeProjectDir(projectDir: string | undefined): boolean {
@@ -114,8 +116,6 @@ export function buildTsunamiExecutionGate(input: {
   if (!input.projectDir?.trim()) return null;
   if (isHarnessLikeProjectDir(input.projectDir)) return null;
   // Skip gate for projects without TSUNAMI data
-  const { existsSync } = require('fs');
-  const { join } = require('path');
   const hasData = existsSync(join(input.projectDir, '.tsunami')) || existsSync(join(input.projectDir, 'README.md'));
   if (!hasData) return null;
   const center = buildTsunamiStormCenter({

@@ -187,7 +187,6 @@ export function classifyTsunamiTextMulti(
 ): Array<{ basin: string; current: string; confidence: number }> {
   const lower = text.toLowerCase();
 
-  // Score each wing independently
   const wingScores: Array<{ wing: string; score: number }> = [];
   for (const [wing, keywords] of Object.entries(WING_KEYWORDS)) {
     let score = 0;
@@ -202,9 +201,27 @@ export function classifyTsunamiTextMulti(
   wingScores.sort((a, b) => b.score - a.score);
   const limit = Math.max(1, top);
 
-  return wingScores.slice(0, limit).map((entry) => ({
-    basin: entry.wing,
-    current: entry.wing,
-    confidence: Math.min(1.0, entry.score / 10),
-  }));
+  return wingScores.slice(0, limit).map((entry) => {
+    // Find the best room within this wing, mirroring classifyMemory logic
+    const rooms = ROOM_KEYWORDS[entry.wing];
+    let bestRoom = entry.wing; // fallback: wing name as current
+    let bestRoomScore = 0;
+    if (rooms) {
+      for (const [room, keywords] of Object.entries(rooms)) {
+        let rs = 0;
+        for (const [keyword, weight] of keywords) {
+          if (lower.includes(keyword.toLowerCase())) rs += weight;
+        }
+        if (rs > bestRoomScore) { bestRoom = room; bestRoomScore = rs; }
+      }
+    }
+    // If no room keywords matched, bestRoom stays as wing name
+    const current = bestRoomScore > 0 ? bestRoom : entry.wing;
+
+    return {
+      basin: entry.wing,
+      current,
+      confidence: Math.min(1.0, entry.score / 10),
+    };
+  });
 }
