@@ -169,7 +169,7 @@ bun install
 import {
   tsunamiAdd, tsunamiSearch,
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
-} from './src/index.ts';
+} from 'tsunami-memory';
 
 // Store a memory
 const id = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
@@ -383,7 +383,7 @@ import {
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
   buildTsunamiExecutionGate, applyTsunamiExecutionGateToTool,
   classifyMemory,
-} from './src/index.ts';
+} from 'tsunami-memory';
 
 const id   = await tsunamiAdd('project', 'tasks', 'Completed API refactor', 5);
 const hits = await tsunamiSearch('refactor', 'project', undefined, 10);

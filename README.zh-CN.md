@@ -169,7 +169,7 @@ bun install
 import {
   tsunamiAdd, tsunamiSearch,
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
-} from './src/index.ts';
+} from 'tsunami-memory';
 
 // 存储记忆
 const id = await tsunamiAdd('project', 'tasks', '完成了认证模块的 API 重构', 5);
@@ -379,7 +379,7 @@ import {
   buildTsunamiStormCenter, formatTsunamiStormCenterText,
   buildTsunamiExecutionGate, applyTsunamiExecutionGateToTool,
   classifyMemory,
-} from './src/index.ts';
+} from 'tsunami-memory';
 
 const id   = await tsunamiAdd('project', 'tasks', '完成认证模块重构', 5);
 const hits = await tsunamiSearch('重构', 'project', undefined, 10);
