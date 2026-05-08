@@ -103,7 +103,9 @@ function loadLegacyFallbackStore(): LegacyFallbackStore {
           ts: Number(item.ts ?? Date.now()),
         })),
     };
-  } catch {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[TSUNAMI] failed to load legacy fallback store: ${msg}`);
     return { version: 1, updatedAt: Date.now(), drawers: [] };
   }
 }

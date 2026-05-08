@@ -56,7 +56,18 @@ let warnedPrimaryStderr = false;
 let lastBackend: 'primary' | 'fallback' | 'bun_native' = 'bun_native';
 const tsunamiReadCache = new Map<string, TsunamiCacheEntry>();
 const tsunamiInflight = new Map<string, Promise<any>>();
-const MAX_TSUNAMI_CACHE_ENTRIES = 64;
+// Cache TTL constants (ms) — per-command freshness windows
+const CACHE_TTL_WAKEUP           = 30_000;  // identity + wing overviews change slowly
+const CACHE_TTL_SEARCH           = 18_000;  // search results stale faster than overviews
+const CACHE_TTL_RECALL           = 12_000;  // recently-added entries invalidate recall quickly
+const CACHE_TTL_STATUS           =  6_000;  // stats/status are highly volatile
+const CACHE_TTL_TIMELINE         =  8_000;  // timeline changes faster than overview, slower than recall
+const CACHE_TTL_DEFAULT          = 15_000;  // safe default for unlisted read commands
+const MAX_TSUNAMI_CACHE_ENTRIES  = 64;
+const FALLBACK_STORE_MAX_ENTRIES = 5_000;   // cap legacy JSON fallback to prevent unbounded growth
+const PRIMARY_TIMEOUT_MS         = 20_000;  // max wait for Python wrapper before falling back
+const DUPLICATE_DEFAULT_THRESHOLD = 0.9;    // Jaccard similarity threshold for dedup
+
 const READ_ONLY_CMDS = new Set([
   'wakeup',
   'search',
@@ -88,20 +99,12 @@ const WRITE_CMDS = new Set([
 
 function getReadCacheTtl(cmd: string): number {
   switch (cmd) {
-    case 'wakeup':
-      return 30_000;
-    case 'search':
-      return 18_000;
-    case 'recall':
-      return 12_000;
-    case 'status':
-    case 'kg_stats':
-      return 6_000;
-    case 'timeline':
-    case 'kg_timeline':
-      return 8_000;
-    default:
-      return 15_000;
+    case 'wakeup':              return CACHE_TTL_WAKEUP;
+    case 'search':              return CACHE_TTL_SEARCH;
+    case 'recall':              return CACHE_TTL_RECALL;
+    case 'status': case 'kg_stats': return CACHE_TTL_STATUS;
+    case 'timeline': case 'kg_timeline': return CACHE_TTL_TIMELINE;
+    default:                    return CACHE_TTL_DEFAULT;
   }
 }
 
@@ -164,8 +167,9 @@ function loadFallbackStore(): FallbackStore {
           ts: Number(d.ts ?? Date.now()),
         })),
     };
-  } catch {
-    console.warn('[TSUNAMI fallback] failed to parse legacy fallback archive; resetting store');
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[TSUNAMI fallback] failed to parse legacy archive (${msg}); resetting store`);
     return { version: 1, updatedAt: Date.now(), drawers: [] };
   }
 }
@@ -279,8 +283,8 @@ function fallbackAdd(wing: string, room: string, content: string, importance = 3
     importance: Number(importance ?? 3),
     ts: Date.now(),
   });
-  if (store.drawers.length > 5000) {
-    store.drawers = store.drawers.slice(-5000);
+  if (store.drawers.length > FALLBACK_STORE_MAX_ENTRIES) {
+    store.drawers = store.drawers.slice(-FALLBACK_STORE_MAX_ENTRIES);
   }
   saveFallbackStore(store);
   return id;
@@ -364,7 +368,7 @@ function fallbackRaw(req: Record<string, unknown>, cause: Error): any {
     return { ok: true, taxonomy };
   }
   if (cmd === 'check_duplicate') {
-    const result = fallbackCheckDuplicate(String(req.content ?? ''), Number(req.threshold ?? 0.9));
+    const result = fallbackCheckDuplicate(String(req.content ?? ''), Number(req.threshold ?? DUPLICATE_DEFAULT_THRESHOLD));
     return { ok: true, ...result };
   }
   if (cmd === 'delete_drawer') {

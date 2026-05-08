@@ -24,7 +24,8 @@ export function readTsunamiIdentity(path = TSUNAMI_IDENTITY_FILE): string {
   try {
     if (!existsSync(path)) return NO_IDENTITY;
     return normalizeTsunamiIdentityText(readFileSync(path, 'utf8'));
-  } catch {
+  } catch (err: unknown) {
+    console.warn(`[TSUNAMI] failed to read identity file at ${path}: ${err instanceof Error ? err.message : String(err)}`);
     return NO_IDENTITY;
   }
 }
