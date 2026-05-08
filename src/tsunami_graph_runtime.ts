@@ -6,21 +6,7 @@
  * BFS traversal, and cross-wing tunnel discovery.
  */
 
-import { Database } from 'bun:sqlite';
-import { BUN_MEMORY_DB_PATH } from './tsunami_storage_paths';
-import { runMigrations, getMigrations } from './migration';
-
-// ── Database initialization ──────────────────────────────────
-
-let _db: Database | null = null;
-
-function getDb(): Database {
-  if (_db) return _db;
-  _db = new Database(BUN_MEMORY_DB_PATH);
-  _db.run('PRAGMA journal_mode = WAL');
-  runMigrations(_db, getMigrations()); // idempotent — applies only pending
-  return _db;
-}
+import { getDb } from './db';
 
 // ── ID Generation ────────────────────────────────────────────
 

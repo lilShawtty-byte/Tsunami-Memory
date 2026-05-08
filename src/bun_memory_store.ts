@@ -5,35 +5,9 @@
  * and content fingerprinting for deduplication. Schema managed by migration runner.
  */
 
-import { Database } from 'bun:sqlite';
-import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { getDb } from './db';
 import { BUN_MEMORY_DB_PATH } from './tsunami_storage_paths';
-import { runMigrations, getMigrations } from './migration';
 export { BUN_MEMORY_DB_PATH };
-
-// ── Database initialization ──────────────────────────────────
-
-function ensureDbDir(): void {
-  const dir = dirname(BUN_MEMORY_DB_PATH);
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-}
-
-let _db: Database | null = null;
-
-function getDb(): Database {
-  if (_db) return _db;
-  ensureDbDir();
-  _db = new Database(BUN_MEMORY_DB_PATH);
-  _db.run('PRAGMA journal_mode = WAL');
-  const applied = runMigrations(_db, getMigrations());
-  if (applied > 0) {
-    // First-run or upgrade — log for observability
-    const v = (_db.prepare('SELECT MAX(version) as v FROM schema_version').get() as any)?.v ?? 0;
-    console.log(`[TSUNAMI] migrations applied: ${applied}, now at v${v}`);
-  }
-  return _db;
-}
 
 // ── ID Generation ────────────────────────────────────────────
 
