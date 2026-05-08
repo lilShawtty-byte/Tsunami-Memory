@@ -1,24 +1,22 @@
 /**
  * TSUNAMI Bun Memory Store — SQLite-backed persistent memory
  *
- * The heart of TSUNAMI. Uses better-sqlite3 (synchronous) with FTS5 full-text search.
  * Stores memories as "drawers" organized by wing/room, with importance scoring
- * and content fingerprinting for deduplication.
+ * and content fingerprinting for deduplication. Schema managed by migration runner.
  */
 
 import { Database } from 'bun:sqlite';
 import { existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { BUN_MEMORY_DB_PATH } from './tsunami_storage_paths';
+import { runMigrations, getMigrations } from './migration';
 export { BUN_MEMORY_DB_PATH };
 
 // ── Database initialization ──────────────────────────────────
 
 function ensureDbDir(): void {
   const dir = dirname(BUN_MEMORY_DB_PATH);
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
 let _db: Database | null = null;
@@ -27,69 +25,13 @@ function getDb(): Database {
   if (_db) return _db;
   ensureDbDir();
   _db = new Database(BUN_MEMORY_DB_PATH);
-
-  // Enable WAL mode for better concurrent access
   _db.run('PRAGMA journal_mode = WAL');
-
-  // Create the main memory table
-  _db.exec(`
-    CREATE TABLE IF NOT EXISTS memory_entries (
-      id TEXT PRIMARY KEY,
-      wing TEXT NOT NULL DEFAULT 'general',
-      room TEXT NOT NULL DEFAULT 'inbox',
-      content TEXT NOT NULL,
-      importance INTEGER NOT NULL DEFAULT 3,
-      source TEXT DEFAULT 'direct',
-      session_id TEXT,
-      project_dir TEXT,
-      fingerprint TEXT,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
-      updated_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
-    )
-  `);
-
-  // Create FTS5 virtual table for full-text search
-  _db.exec(`
-    CREATE VIRTUAL TABLE IF NOT EXISTS memory_fts USING fts5(
-      content, wing, room,
-      content='memory_entries',
-      content_rowid='rowid'
-    )
-  `);
-
-  // Create indexes for common queries
-  _db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_memory_wing_room ON memory_entries(wing, room)
-  `);
-  _db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_memory_created_at ON memory_entries(created_at)
-  `);
-  _db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_memory_fingerprint ON memory_entries(fingerprint)
-  `);
-
-  // Triggers to keep FTS in sync
-  _db.exec(`
-    CREATE TRIGGER IF NOT EXISTS memory_fts_insert AFTER INSERT ON memory_entries BEGIN
-      INSERT INTO memory_fts(rowid, content, wing, room)
-      VALUES (new.rowid, new.content, new.wing, new.room);
-    END
-  `);
-  _db.exec(`
-    CREATE TRIGGER IF NOT EXISTS memory_fts_delete AFTER DELETE ON memory_entries BEGIN
-      INSERT INTO memory_fts(memory_fts, rowid, content, wing, room)
-      VALUES ('delete', old.rowid, old.content, old.wing, old.room);
-    END
-  `);
-  _db.exec(`
-    CREATE TRIGGER IF NOT EXISTS memory_fts_update AFTER UPDATE ON memory_entries BEGIN
-      INSERT INTO memory_fts(memory_fts, rowid, content, wing, room)
-      VALUES ('delete', old.rowid, old.content, old.wing, old.room);
-      INSERT INTO memory_fts(rowid, content, wing, room)
-      VALUES (new.rowid, new.content, new.wing, new.room);
-    END
-  `);
-
+  const applied = runMigrations(_db, getMigrations());
+  if (applied > 0) {
+    // First-run or upgrade — log for observability
+    const v = (_db.prepare('SELECT MAX(version) as v FROM schema_version').get() as any)?.v ?? 0;
+    console.log(`[TSUNAMI] migrations applied: ${applied}, now at v${v}`);
+  }
   return _db;
 }
 

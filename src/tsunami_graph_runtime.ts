@@ -8,6 +8,7 @@
 
 import { Database } from 'bun:sqlite';
 import { BUN_MEMORY_DB_PATH } from './tsunami_storage_paths';
+import { runMigrations, getMigrations } from './migration';
 
 // ── Database initialization ──────────────────────────────────
 
@@ -15,35 +16,9 @@ let _db: Database | null = null;
 
 function getDb(): Database {
   if (_db) return _db;
-
   _db = new Database(BUN_MEMORY_DB_PATH);
   _db.run('PRAGMA journal_mode = WAL');
-
-  _db.exec(`
-    CREATE TABLE IF NOT EXISTS graph_triples (
-      id TEXT PRIMARY KEY,
-      subject TEXT NOT NULL,
-      predicate TEXT NOT NULL,
-      object TEXT NOT NULL,
-      subject_type TEXT,
-      object_type TEXT,
-      subject_properties TEXT DEFAULT '{}',
-      object_properties TEXT DEFAULT '{}',
-      confidence REAL NOT NULL DEFAULT 1.0,
-      valid_from TEXT,
-      valid_to TEXT,
-      source_file TEXT,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
-    )
-  `);
-
-  // Indexes for common graph queries
-  _db.exec(`CREATE INDEX IF NOT EXISTS idx_graph_subject ON graph_triples(subject)`);
-  _db.exec(`CREATE INDEX IF NOT EXISTS idx_graph_predicate ON graph_triples(predicate)`);
-  _db.exec(`CREATE INDEX IF NOT EXISTS idx_graph_object ON graph_triples(object)`);
-  _db.exec(`CREATE INDEX IF NOT EXISTS idx_graph_subject_predicate ON graph_triples(subject, predicate)`);
-  _db.exec(`CREATE INDEX IF NOT EXISTS idx_graph_valid_to ON graph_triples(valid_to)`);
-
+  runMigrations(_db, getMigrations()); // idempotent — applies only pending
   return _db;
 }
 
