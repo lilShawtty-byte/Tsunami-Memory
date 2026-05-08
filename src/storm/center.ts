@@ -1,5 +1,4 @@
 // Storm center — orchestrator
-import { existsSync, readFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import {
   getProjectLatestHandoff, getProjectStateStatus, listProjectWikiPages,
@@ -92,6 +91,7 @@ export function buildTsunamiStormCenterOnce(opts: BuildStormCenterOpts = {}): Ts
     fallbackMainlineTitle: !thread && !handoff && !status.activeFeature ? docSupport.mainlineTitle : undefined,
     fallbackMainlineSummary: !thread && !handoff && !status.activeFeature ? docSupport.mainlineSummary : undefined,
   });
+  // Full-signal mix for storm mode + pressure detection (before selection limits are applied)
   const currentMix = buildCurrentMix(currents);
   const stormMode = buildStormMode(currentMix);
   const stormPressure = buildStormPressure({
