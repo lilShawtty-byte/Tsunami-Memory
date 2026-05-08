@@ -478,6 +478,18 @@ Keywords like `decide`, `merge`, `deploy`, `发布`, `上线` auto-archive to th
 
 ---
 
+---
+
+<div align="center">
+
+## 🧹 Legacy Compatibility
+
+</div>
+
+The `legacy_compat/` directory and Python wrapper fallback in `tsunami_client.ts` exist to maintain compile-time compatibility with code extracted from a larger Python-based monorepo. These paths are **disabled by default** and are scheduled for removal in v2.0. New integrations should use the Bun-native SDK, HTTP API, or MCP tools exclusively.
+
+---
+
 <div align="center">
 
 ## 📄 License

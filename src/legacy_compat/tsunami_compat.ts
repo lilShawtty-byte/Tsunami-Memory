@@ -1,8 +1,9 @@
 /**
  * TSUNAMI legacy compatibility stubs
  *
- * Provides compatibility wrappers for the legacy Python-based TSUNAMI wrapper.
- * The Bun-native runtime uses these as fallback/opt-in paths only.
+ * @deprecated These stubs exist to preserve compile-time compatibility with code
+ * extracted from a larger Python-based monorepo. They provide fallback/opt-in paths
+ * that are disabled by default. Scheduled for removal in v2.0.
  */
 
 export const TSUNAMI_COMPAT_WRAPPER = '';
