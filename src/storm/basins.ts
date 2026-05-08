@@ -1,5 +1,6 @@
 // Storm center — supporting basin analysis
 import { classifyTsunamiText } from '../tsunami_classifier';
+import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
 import type { TsunamiStormCenter } from './types';
 
 export function buildSupportingBasins(input: {

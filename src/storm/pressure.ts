@@ -1,4 +1,6 @@
 import type { TsunamiStormCenterCurrentMix, TsunamiStormCenterStormMode, TsunamiStormPressure } from './types';
+import type { TsunamiStormCenter } from './types';
+import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
 
 export function buildStormPressure(input: {
   currentMix: TsunamiStormCenterCurrentMix[];

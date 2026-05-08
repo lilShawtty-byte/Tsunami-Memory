@@ -1,4 +1,5 @@
-import type { TsunamiStormReadiness } from './types';
+import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
+import type { TsunamiStormReadiness, TsunamiStormCenter } from './types';
 
 export function buildStormReadiness(input: {
   hasMainline: boolean;

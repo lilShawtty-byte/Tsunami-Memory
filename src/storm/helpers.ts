@@ -4,7 +4,14 @@ import { basename, join } from 'node:path';
 import { listProjectWikiPages } from '../core/project_state';
 import type { ProjectHandoffRecord, ProjectTaskThread } from '../core/project_state';
 import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
-import type { TsunamiStormCenterCurrent } from './types';
+import type { TsunamiStormCenterCurrent, TsunamiStormCenter } from './types';
+
+type TsunamiFallbackDocSupport = {
+  anchors: TsunamiStormCenter['anchors'];
+  evidence: TsunamiStormCenter['evidence'];
+  mainlineTitle?: string;
+  mainlineSummary?: string;
+};
 
 const TSUNAMI_STORM_RETRY_DELAYS_MS = [8, 18, 36] as const;
 

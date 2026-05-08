@@ -162,7 +162,7 @@ Memories don't exist in isolation — they form a graph. Every memory can be lin
 </div>
 
 ```bash
-bun install
+bun add tsunami-memory
 ```
 
 ```typescript

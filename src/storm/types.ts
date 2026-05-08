@@ -3,6 +3,12 @@ import type { ProjectHandoffRecord, ProjectTaskThread } from '../core/project_st
 import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
 import type { TsunamiRuntimeGraphSyncSummary } from '../tsunami_runtime_graph_sync';
 
+// Forward-declare return types used in TsunamiStormCenter — these are stubs
+// since the real implementations live in stub modules; this keeps types.ts clean.
+type WikiEvidenceSnippet = { snippetId: string; pageId: string; title: string; sourcePath?: string; sourceRef?: string; quote: string; tags: string[] };
+type MemoryIssue = { code: string; severity?: string; detail?: string };
+type MemoryRepairSuggestion = { title: string; priority?: string; detail?: string };
+
 export type BuildStormCenterOpts = {
   projectDir?: string;
   query?: string;
@@ -13,7 +19,7 @@ export type BuildStormCenterOpts = {
   relationLimit?: number;
 };
 
-type StormCurrentKind =
+export type StormCurrentKind =
   | 'primary_thread'
   | 'handoff'
   | 'anchor'
@@ -169,7 +175,7 @@ export type TsunamiStormCenter = {
     confidence: number;
     tags: string[];
   }>;
-  evidence: ReturnType<typeof queryProjectWiki>['evidence'];
+  evidence: WikiEvidenceSnippet[];
   graph: {
     project: Record<string, unknown>[];
     thread: Record<string, unknown>[];
@@ -177,8 +183,8 @@ export type TsunamiStormCenter = {
     anchor: Record<string, unknown>[];
     recovery: Record<string, unknown>[];
   };
-  issues: ReturnType<typeof auditMemoryFabric>['issues'];
-  repairSuggestions: ReturnType<typeof auditMemoryFabric>['repairSuggestions'];
+  issues: MemoryIssue[];
+  repairSuggestions: MemoryRepairSuggestion[];
   currents: TsunamiStormCenterCurrent[];
   currentMix: TsunamiStormCenterCurrentMix[];
   stormMode?: TsunamiStormCenterStormMode;

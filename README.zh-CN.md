@@ -162,7 +162,7 @@ graph TD
 </div>
 
 ```bash
-bun install
+bun add tsunami-memory
 ```
 
 ```typescript

@@ -1,4 +1,5 @@
 import type { TsunamiStormPressure, TsunamiStormCenterStormMode, TsunamiStormDirective, TsunamiStormAction } from './types';
+import type { TsunamiStormCenter } from './types';
 
 export function buildStormDirective(input: {
   stormPressure?: TsunamiStormPressure;

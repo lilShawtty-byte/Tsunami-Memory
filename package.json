@@ -10,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tsunami-memory/tsunami.git"
+    "url": "git+https://github.com/lilShawtty-byte/Tsunami-Memory.git"
   },
   "bugs": {
-    "url": "https://github.com/tsunami-memory/tsunami/issues"
+    "url": "https://github.com/lilShawtty-byte/Tsunami-Memory/issues"
   },
   "type": "module",
   "scripts": {

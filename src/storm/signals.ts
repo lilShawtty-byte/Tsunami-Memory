@@ -1,5 +1,7 @@
 // Storm center — signal analysis
 import { clampEnergy, safeTrim, buildProjectNode, buildTaskThreadNode, buildHandoffNode, buildAnchorNode, buildRecoveryNode } from './helpers';
+import type { ProjectTaskThread, ProjectHandoffRecord } from '../core/project_state';
+import type { DurableRecoveryRecord } from '../runtime/checkpoints/durable_recovery';
 import type { StormCurrentKind, TsunamiStormCenterCurrent, TsunamiStormCenterCurrentMix, TsunamiStormCenter } from './types';
 
 export function buildCurrents(input: {
