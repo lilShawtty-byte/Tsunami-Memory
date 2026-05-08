@@ -1,6 +1,6 @@
 {
   "name": "tsunami-memory",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "TSUNAMI — Bun-native oceanic memory system with basin/current flow, storm center, hot+cold retrieval, knowledge graph sync, and evidence linking.",
   "main": "src/index.ts",
   "files": [
