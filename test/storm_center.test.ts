@@ -346,7 +346,7 @@ describe('storm pipeline integration', () => {
 
     expect(mode!.dominantKind).toBe('primary_thread');
     expect(['calm', 'steady']).toContain(pressure.level);
-    expect(budget.mode).toBeDefined();
+    expect(['frozen', 'minimal']).toContain(budget.mode); // weak readiness → restricted budget
     expect(budget.steps).toBeGreaterThanOrEqual(0);
   });
 
