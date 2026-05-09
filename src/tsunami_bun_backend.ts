@@ -5,6 +5,8 @@ import {
   BUN_MEMORY_DB_PATH,
   addWithEmbedding,
   buildBunMemoryPreview,
+  getEntryHistory,
+  getRecentChanges,
   searchHybrid,
   checkBunMemoryDuplicate,
   countBunMemoryEntries,
@@ -736,6 +738,22 @@ export function tryHandleTsunamiBunRequest(req: Record<string, unknown>): any | 
     const w = req.weights && typeof req.weights === 'object' ? req.weights as Record<string, number> : undefined;
     const results = searchHybrid(query, emb, Number(req.limit ?? 5), wing || undefined, w);
     return { ok: true, results, __backend: 'bun_native' };
+  }
+
+  if (cmd === 'history') {
+    const entryId = String(req.entry_id ?? '').trim();
+    if (!entryId) {
+      return { ok: false, error: 'entry_id required', __backend: 'bun_native' };
+    }
+    return { ok: true, history: getEntryHistory(entryId), __backend: 'bun_native' };
+  }
+
+  if (cmd === 'changes') {
+    return {
+      ok: true,
+      changes: getRecentChanges(wing || undefined, Number(req.limit ?? 20)),
+      __backend: 'bun_native',
+    };
   }
 
   return null;

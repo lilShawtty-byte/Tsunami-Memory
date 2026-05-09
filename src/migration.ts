@@ -166,7 +166,29 @@ const v2_add_embedding_column: Migration = {
   },
 };
 
+/** v3 — Add memory_history table for temporal change tracking. */
+const v3_add_memory_history: Migration = {
+  version: 3,
+  name: 'add_memory_history',
+  up(db) {
+    db.run(`
+      CREATE TABLE IF NOT EXISTS memory_history (
+        id          TEXT PRIMARY KEY,
+        entry_id    TEXT NOT NULL,
+        wing        TEXT,
+        room        TEXT,
+        content     TEXT,
+        importance  INTEGER,
+        changed_at  INTEGER NOT NULL DEFAULT (unixepoch() * 1000),
+        change_type TEXT DEFAULT 'update'
+      )
+    `);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_hist_entry ON memory_history(entry_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_hist_time  ON memory_history(changed_at)`);
+  },
+};
+
 /** All migrations in version order. Add new entries at the end. */
 export function getMigrations(): Migration[] {
-  return [v1_initial_schema, v2_add_embedding_column];
+  return [v1_initial_schema, v2_add_embedding_column, v3_add_memory_history];
 }

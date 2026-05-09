@@ -111,6 +111,23 @@ const server = Bun.serve({
         return json({ ok: true, results }, cors);
       }
 
+      // ── GET /history/:id ────────────────────────────
+      const histMatch = url.pathname.match(/^\/history\/(.+)$/);
+      if (histMatch && req.method === 'GET') {
+        const store = await import('../src/bun_memory_store');
+        const history = store.getEntryHistory(histMatch[1]);
+        return json({ ok: true, history }, cors);
+      }
+
+      // ── GET /changes?wing=&limit= ─────────────────────
+      if (url.pathname === '/changes' && req.method === 'GET') {
+        const store = await import('../src/bun_memory_store');
+        const wing = url.searchParams.get('wing') || undefined;
+        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const changes = store.getRecentChanges(wing, limit);
+        return json({ ok: true, changes }, cors);
+      }
+
       // ── POST /diary ─────────────────────────────────
       if (url.pathname === '/diary' && req.method === 'POST') {
         const body = await req.json().catch(() => ({}));

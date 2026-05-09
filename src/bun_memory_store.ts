@@ -502,6 +502,72 @@ export function searchHybrid(
     .map(r => ({ ...r, score: Math.min(1, Number(r.score.toFixed(4))) }));
 }
 
+// ── Temporal History ─────────────────────────────────────────
+
+export interface MemoryHistoryRow {
+  id: string;
+  entry_id: string;
+  wing: string | null;
+  room: string | null;
+  content: string | null;
+  importance: number | null;
+  changed_at: number;
+  change_type: string;
+}
+
+/** Update a memory entry, preserving the old version in memory_history. */
+export function updateBunMemoryEntry(
+  id: string,
+  fields: { content?: string; importance?: number; wing?: string; room?: string },
+): boolean {
+  const db = getDb();
+  const old = db.prepare('SELECT * FROM memory_entries WHERE id = ?').get(id) as BunMemoryRow | undefined;
+  if (!old) return false;
+
+  // Archive old version
+  db.prepare(`
+    INSERT INTO memory_history (id, entry_id, wing, room, content, importance, changed_at, change_type)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    `hist_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+    id, old.wing, old.room, old.content, old.importance, Date.now(), 'update',
+  );
+
+  // Apply update
+  const sets: string[] = [];
+  const params: any[] = [];
+  if (fields.content !== undefined) { sets.push('content = ?'); params.push(fields.content); }
+  if (fields.importance !== undefined) { sets.push('importance = ?'); params.push(fields.importance); }
+  if (fields.wing !== undefined) { sets.push('wing = ?'); params.push(fields.wing); }
+  if (fields.room !== undefined) { sets.push('room = ?'); params.push(fields.room); }
+  if (sets.length === 0) return false;
+  sets.push('updated_at = ?');
+  params.push(Date.now());
+  params.push(id);
+
+  db.prepare(`UPDATE memory_entries SET ${sets.join(', ')} WHERE id = ?`).run(...params);
+  return true;
+}
+
+/** Get the complete change history for a single memory entry. */
+export function getEntryHistory(entryId: string): MemoryHistoryRow[] {
+  const db = getDb();
+  return db.prepare(
+    'SELECT * FROM memory_history WHERE entry_id = ? ORDER BY changed_at DESC'
+  ).all(entryId) as MemoryHistoryRow[];
+}
+
+/** Get recent changes across all or filtered by wing. */
+export function getRecentChanges(wing?: string, limit = 20): MemoryHistoryRow[] {
+  const db = getDb();
+  let sql = 'SELECT * FROM memory_history';
+  const params: any[] = [];
+  if (wing) { sql += ' WHERE wing = ?'; params.push(wing); }
+  sql += ' ORDER BY changed_at DESC LIMIT ?';
+  params.push(Math.max(1, Math.min(100, limit)));
+  return db.prepare(sql).all(...params) as MemoryHistoryRow[];
+}
+
 export function buildBunMemoryPreview(row: BunMemoryRow, maxLen: number): string {
   const text = String(row.content ?? '').replace(/\s+/g, ' ').trim();
   if (!text) return '';

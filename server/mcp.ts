@@ -142,6 +142,26 @@ const TOOLS = [
     },
   },
   {
+    name: 'tsunami_history',
+    description: 'Get the complete change history for a single memory entry. Shows all past versions with timestamps.',
+    inputSchema: {
+      type: 'object',
+      properties: { entry_id: { type: 'string', description: 'Memory entry ID (bunmem_xxx)' } },
+      required: ['entry_id'],
+    },
+  },
+  {
+    name: 'tsunami_changes',
+    description: 'Get recent changes across all memories, optionally filtered by wing.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        wing: { type: 'string', description: 'Filter changes by wing/basin' },
+        limit: { type: 'number', description: 'Max results (default: 20)', default: 20 },
+      },
+    },
+  },
+  {
     name: 'tsunami_wings',
     description: 'List all available memory wings/basins and their memory counts.',
     inputSchema: { type: 'object', properties: {} },
@@ -206,6 +226,17 @@ async function handleTool(name: string, args: Record<string, any>): Promise<any>
       const store = await import('../src/bun_memory_store');
       const results = store.searchByVector(args.embedding, args.limit || 5, args.wing);
       return { results };
+    }
+
+    case 'tsunami_history': {
+      if (!args.entry_id?.trim()) throw new Error('entry_id required');
+      const store = await import('../src/bun_memory_store');
+      return { history: store.getEntryHistory(args.entry_id) };
+    }
+
+    case 'tsunami_changes': {
+      const store = await import('../src/bun_memory_store');
+      return { changes: store.getRecentChanges(args.wing, args.limit || 20) };
     }
 
     case 'tsunami_wings': {
