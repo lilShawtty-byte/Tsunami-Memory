@@ -37,14 +37,14 @@ function err(id: number, code: number, message: string) {
 const TOOLS = [
   {
     name: 'tsunami_add',
-    description: 'Add a memory to TSUNAMI. Returns confirmation with the stored content.',
+    description: 'Add a memory to TSUNAMI. You MUST choose the single best wing for the content — this is how TSUNAMI organizes all memories. Wings: identity (who you are, personality, rules, iron laws), decision (choices, tech selections, conclusions, approaches), task (projects, deployments, development, testing, routines), memory (knowledge, search, graph, archives, sessions), brain (models, configs, tools, architecture, TTS), people (users, teams, colleagues, partners). Room is the sub-topic within the wing. Energy 1-5: 5=critical/definitive, 4=important decision, 3=useful context, 2=minor note, 1=footnote.',
     inputSchema: {
       type: 'object',
       properties: {
         content: { type: 'string', description: 'Memory content to store' },
-        wing: { type: 'string', description: 'Memory wing/basin (default: general)', default: 'general' },
-        room: { type: 'string', description: 'Room/topic within the wing (default: inbox)', default: 'inbox' },
-        energy: { type: 'number', description: 'Energy/importance level 1-5 (default: 3)', default: 3 },
+        wing: { type: 'string', description: 'Classification wing: identity | decision | task | memory | brain | people' },
+        room: { type: 'string', description: 'Sub-topic within the wing (free text, e.g. "strategy", "deploy", "personality")' },
+        energy: { type: 'number', description: 'Importance 1-5 (5=critical decision, 3=default, 1=footnote)', default: 3 },
       },
       required: ['content'],
     },
