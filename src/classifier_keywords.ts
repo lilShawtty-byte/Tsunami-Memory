@@ -19,6 +19,10 @@ export const WING_KEYWORDS: Record<string, KeywordPair[]> = {
     ['preference', 2.0], ['style', 2.0], ['tone', 2.0],
     ['principle', 3.0], ['rule', 2.5], ['iron_law', 3.5], ['red_line', 3.5],
     ['communication', 2.0], ['speech', 2.0],
+    ['身份', 3.0], ['我是谁', 3.0], ['角色', 3.0], ['名字', 2.0],
+    ['人格', 3.0], ['性格', 2.5], ['行为', 2.0], ['偏好', 2.0],
+    ['风格', 2.0], ['语气', 2.0], ['原则', 3.0], ['规则', 2.5],
+    ['铁律', 3.5], ['红线', 3.5], ['沟通', 2.0],
   ],
   brain: [
     ['brain', 2.5], ['model', 2.0],
@@ -31,6 +35,11 @@ export const WING_KEYWORDS: Record<string, KeywordPair[]> = {
     ['architecture', 2.0], ['module', 2.0],
     ['directory', 1.5], ['path', 1.5], ['file', 1.0],
     ['code', 1.5], ['implementation', 1.5], ['bug', 2.0], ['fix', 1.5],
+    ['大脑', 2.5], ['模型', 2.0], ['引擎', 2.0],
+    ['配置', 2.0], ['工具', 2.0],
+    ['架构', 2.0], ['模块', 2.0], ['目录', 1.5],
+    ['路径', 1.5], ['文件', 1.0], ['代码', 1.5], ['实现', 1.5],
+    ['bug', 2.0], ['修复', 1.5],
   ],
   decision: [
     ['decision', 3.0], ['decision_making', 3.0], ['chose', 2.5],
@@ -39,6 +48,10 @@ export const WING_KEYWORDS: Record<string, KeywordPair[]> = {
     ['decided', 3.0], ['finalized', 2.5], ['selected', 2.0],
     ['architecture', 2.5], ['tech_stack', 3.0], ['framework', 2.0],
     ['feature', 1.5], ['requirement', 1.5],
+    ['决定', 3.0], ['选择', 2.5], ['方案', 2.5],
+    ['采用', 2.0], ['放弃', 2.0], ['结论', 2.0],
+    ['确定', 3.0], ['技术栈', 3.0], ['框架', 2.0],
+    ['功能', 1.5], ['需求', 1.5],
   ],
   memory: [
     ['memory', 3.0], ['graphmemory', 3.0], ['knowledge_graph', 3.0],
@@ -49,6 +62,11 @@ export const WING_KEYWORDS: Record<string, KeywordPair[]> = {
     ['session', 2.0], ['context', 1.5],
     ['compress', 2.0],
     ['wrapper', 2.5], ['long_term_memory', 3.0], ['memory_fabric', 2.5], ['tsunami', 2.5],
+    ['记忆', 3.0], ['知识图谱', 3.0], ['关系', 2.0], ['回想', 2.5],
+    ['搜索', 1.5], ['向量', 2.5], ['嵌入', 2.5], ['语义搜索', 3.0],
+    ['语义', 2.0], ['回忆', 2.0], ['归档', 2.0],
+    ['会话', 2.0], ['上下文', 1.5], ['压缩', 2.0],
+    ['长期记忆', 3.0],
   ],
   task: [
     ['task', 2.0], ['todo', 2.0], ['project', 1.5],
@@ -60,11 +78,16 @@ export const WING_KEYWORDS: Record<string, KeywordPair[]> = {
     ['core_task', 3.0], ['phase_task', 2.5], ['phase_1', 2.5],
     ['heartbeat_check', 3.0], ['scheduled_check', 2.5], ['verify', 2.5],
     ['check', 1.5],
+    ['任务', 2.0], ['待办', 2.0], ['项目', 1.5], ['实现', 2.0],
+    ['开发', 1.5], ['测试', 1.5], ['部署', 1.5],
+    ['完成', 1.5], ['进行中', 2.0], ['计划', 1.5], ['日常', 2.0],
+    ['核心任务', 3.0], ['阶段任务', 2.5], ['心跳检查', 3.0], ['验证', 2.5],
   ],
   people: [
     ['user', 3.0], ['boss', 3.0],
     ['partner', 3.0],
     ['team', 1.5], ['colleague', 1.5],
+    ['用户', 3.0], ['老板', 3.0], ['伙伴', 3.0], ['团队', 1.5], ['同事', 1.5],
   ],
 };
 
