@@ -7,6 +7,7 @@
 
 import { getDb } from './db';
 import { BUN_MEMORY_DB_PATH } from './tsunami_storage_paths';
+import { tsunamiGraphQueryEntity } from './tsunami_graph_runtime';
 export { BUN_MEMORY_DB_PATH };
 
 // ── ID Generation ────────────────────────────────────────────
@@ -395,6 +396,110 @@ export function searchByVector(
     .sort((a, b) => b.similarity - a.similarity);
 
   return scored.slice(0, Math.max(1, topK));
+}
+
+// ── Hybrid Search ───────────────────────────────────────────
+
+export interface HybridResult {
+  id: string;
+  wing: string;
+  room: string;
+  content: string;
+  score: number;           // fused score [0,1]
+  sources: string[];        // which channels contributed: fts5 | vector | graph
+  keywordScore?: number;    // normalized FTS5 score
+  vectorScore?: number;     // cosine similarity
+  graphScore?: number;      // graph match signal
+}
+
+function normalizeScores(items: Array<{ id: string; score: number }>): Map<string, number> {
+  const map = new Map<string, number>();
+  if (items.length === 0) return map;
+  const scores = items.map(i => i.score);
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  const range = max - min || 1;
+  for (const item of items) {
+    map.set(item.id, (item.score - min) / range);
+  }
+  return map;
+}
+
+/**
+ * Hybrid search — fuses FTS5, vector, and graph channels into a single
+ * ranked result set. Weighted merge with deduplication.
+ */
+export function searchHybrid(
+  query: string,
+  embedding?: number[],
+  topK = 5,
+  wing?: string,
+  weights?: { keyword?: number; vector?: number; graph?: number },
+): HybridResult[] {
+  const kw = weights?.keyword ?? 0.4;
+  const vw = weights?.vector ?? 0.4;
+  const gw = weights?.graph ?? 0.2;
+  const scored = new Map<string, HybridResult>();
+
+  // Channel 1: FTS5 keyword search
+  const fts5Rows = searchBunMemoryRows({ query, wing, limit: 20 });
+  // FTS5 returns no numeric score — use row position as proxy (top = highest)
+  const fts5Scored = fts5Rows.map((r, i) => ({ id: r.id, score: fts5Rows.length - i }));
+  const fts5Norm = normalizeScores(fts5Scored);
+  for (const row of fts5Rows) {
+    const score = (fts5Norm.get(row.id) ?? 0) * kw;
+    scored.set(row.id, {
+      id: row.id, wing: row.wing, room: row.room, content: row.content,
+      score, sources: ['fts5'], keywordScore: fts5Norm.get(row.id) ?? 0,
+    });
+  }
+
+  // Channel 2: Vector similarity
+  if (embedding && embedding.length > 0) {
+    const vecRows = searchByVector(embedding, 20, wing);
+    const vecNorm = normalizeScores(vecRows.map(r => ({ id: r.id, score: r.similarity })));
+    for (const row of vecRows) {
+      const add = (vecNorm.get(row.id) ?? 0) * vw;
+      const existing = scored.get(row.id);
+      if (existing) {
+        existing.score += add;
+        existing.sources.push('vector');
+        existing.vectorScore = vecNorm.get(row.id) ?? 0;
+      } else {
+        scored.set(row.id, {
+          id: row.id, wing: row.wing, room: row.room, content: row.content,
+          score: add, sources: ['vector'], vectorScore: vecNorm.get(row.id) ?? 0,
+        });
+      }
+    }
+  }
+
+  // Channel 3: Knowledge graph (tokenize query into entities)
+  const tokens = query.toLowerCase().split(/[\s,，。；;：:]+/).filter(t => t.length >= 2);
+  for (const token of tokens.slice(0, 5)) {
+    try {
+      const triples = tsunamiGraphQueryEntity(token, undefined, 'both');
+      for (const t of triples.slice(0, 10)) {
+        const match = searchBunMemoryRows({ query: t.subject, wing, limit: 3 });
+        for (const m of match) {
+          const add = 0.5 * gw;
+          const existing = scored.get(m.id);
+          if (existing) {
+            existing.score += add;
+            if (!existing.sources.includes('graph')) existing.sources.push('graph');
+            existing.graphScore = 0.5;
+          }
+        }
+      }
+    } catch {
+      // Token not in graph — skip gracefully
+    }
+  }
+
+  return Array.from(scored.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, Math.max(1, topK))
+    .map(r => ({ ...r, score: Math.min(1, Number(r.score.toFixed(4))) }));
 }
 
 export function buildBunMemoryPreview(row: BunMemoryRow, maxLen: number): string {

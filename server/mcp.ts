@@ -114,6 +114,21 @@ const TOOLS = [
     },
   },
   {
+    name: 'tsunami_search_hybrid',
+    description: 'Hybrid search — fuses FTS5 keyword, vector similarity, and knowledge graph into one ranked result set. Weights default to 0.4 keyword + 0.4 vector + 0.2 graph.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Keyword search query (required)' },
+        embedding: { type: 'array', items: { type: 'number' }, description: 'Pre-computed embedding vector for semantic matching (optional)' },
+        wing: { type: 'string', description: 'Filter by wing/basin' },
+        limit: { type: 'number', description: 'Max results (default: 5)', default: 5 },
+        weights: { type: 'object', description: 'Channel weights: {keyword, vector, graph} (defaults: 0.4, 0.4, 0.2)' },
+      },
+      required: ['query'],
+    },
+  },
+  {
     name: 'tsunami_search_semantic',
     description: 'Search memories by embedding vector similarity. The caller must provide a pre-computed embedding (e.g. from OpenAI / ollama / local model). Returns top-K results ranked by cosine similarity.',
     inputSchema: {
@@ -176,6 +191,13 @@ async function handleTool(name: string, args: Record<string, any>): Promise<any>
 
     case 'tsunami_diary':
       return { result: await client.tsunamiDiary(args.entry, args.agent || 'external', args.wing || 'diary', 3) };
+
+    case 'tsunami_search_hybrid': {
+      if (!args.query?.trim()) throw new Error('query required');
+      const store = await import('../src/bun_memory_store');
+      const results = store.searchHybrid(args.query, args.embedding, args.limit || 5, args.wing, args.weights);
+      return { results };
+    }
 
     case 'tsunami_search_semantic': {
       if (!Array.isArray(args.embedding) || args.embedding.length === 0) {

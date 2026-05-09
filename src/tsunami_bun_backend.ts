@@ -5,6 +5,7 @@ import {
   BUN_MEMORY_DB_PATH,
   addWithEmbedding,
   buildBunMemoryPreview,
+  searchHybrid,
   checkBunMemoryDuplicate,
   countBunMemoryEntries,
   deleteBunMemoryEntry,
@@ -723,6 +724,17 @@ export function tryHandleTsunamiBunRequest(req: Record<string, unknown>): any | 
       return { ok: false, error: 'embedding vector required for search_vector', __backend: 'bun_native' };
     }
     const results = searchByVector(vector, Number(req.limit ?? 5), wing || undefined);
+    return { ok: true, results, __backend: 'bun_native' };
+  }
+
+  if (cmd === 'search_hybrid') {
+    const query = String(req.query ?? '').trim();
+    if (!query) {
+      return { ok: false, error: 'query required for search_hybrid', __backend: 'bun_native' };
+    }
+    const emb = Array.isArray(req.embedding) ? (req.embedding as number[]) : undefined;
+    const w = req.weights && typeof req.weights === 'object' ? req.weights as Record<string, number> : undefined;
+    const results = searchHybrid(query, emb, Number(req.limit ?? 5), wing || undefined, w);
     return { ok: true, results, __backend: 'bun_native' };
   }
 

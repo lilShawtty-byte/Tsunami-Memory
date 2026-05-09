@@ -89,6 +89,16 @@ const server = Bun.serve({
         return json({ ok: true, timeline: result }, cors);
       }
 
+      // ── POST /search/hybrid ──────────────────────────
+      if (url.pathname === '/search/hybrid' && req.method === 'POST') {
+        const body = await req.json().catch(() => ({}));
+        const { query, embedding, wing, limit, weights } = body;
+        if (!query?.trim()) return json({ error: 'query required' }, cors, 400);
+        const store = await import('../src/bun_memory_store');
+        const results = store.searchHybrid(query, embedding, limit || 5, wing, weights);
+        return json({ ok: true, results }, cors);
+      }
+
       // ── POST /search/semantic ────────────────────────
       if (url.pathname === '/search/semantic' && req.method === 'POST') {
         const body = await req.json().catch(() => ({}));
