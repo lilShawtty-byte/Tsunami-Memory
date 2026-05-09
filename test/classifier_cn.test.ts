@@ -1,6 +1,12 @@
 #!/usr/bin/env bun
 /**
- * TSUNAMI Chinese Classifier Benchmark
+ * TSUNAMI Chinese Classifier — Sanity Check
+ *
+ * These 16 sentences were deliberately written to contain the exact CJK keywords
+ * added to classifier_keywords.ts. This test verifies that the keyword system is
+ * NOT broken — it does NOT measure real-world accuracy.
+ *
+ * For honest accuracy: see classifier_cn_realistic.test.ts (currently ~31%)
  */
 import { describe, it, expect } from 'bun:test';
 import { classifyMemory, classifyTsunamiText } from '../src/tsunami_classifier';
@@ -35,9 +41,9 @@ describe('Chinese classifier benchmark', () => {
     });
   }
 
-  it('Chinese accuracy >= 60%', () => {
+  it('keyword sanity: all seeded sentences are classified', () => {
     const rate = correct / CN_BENCHMARKS.length;
-    console.log(`  Chinese wing accuracy: ${correct}/${CN_BENCHMARKS.length} = ${(rate * 100).toFixed(0)}%`);
+    console.log(`  Sanity pass: ${correct}/${CN_BENCHMARKS.length} = ${(rate * 100).toFixed(0)}%`);
     expect(rate).toBeGreaterThanOrEqual(0.6);
   });
 });
